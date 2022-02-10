@@ -22,10 +22,12 @@ fun Routing.sensor(service: SensorService) {
         post {
             val body = call.receive<SensorRequest>()
             println(body.name);
+
             service.new(
                 mac = body.mac,
                 model = body.model,
                 name = body.name,
+                provider = body.provider,
                 workplace_id = body.workplace_id
             )
             call.response.status(HttpStatusCode.Created)

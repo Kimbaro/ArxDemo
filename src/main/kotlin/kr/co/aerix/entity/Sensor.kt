@@ -9,9 +9,10 @@ import org.jetbrains.exposed.dao.id.IntIdTable
 
 //table scheme
 object SensorScheme : IntIdTable() {
-    val mac = text("mac");
+    val mac = text("mac")
     val model = text("model");
     val status = text("status").default("UNKNOWN");
+    val provider = text("provider")
     val name = text("name");
     val workplace_id = integer("workplace_id").references(WorkplaceScheme.id)
 }
@@ -22,6 +23,7 @@ class Sensor(id: EntityID<Int>) : IntEntity(id) {
     var mac by SensorScheme.mac
     var model by SensorScheme.model
     var status by SensorScheme.status
+    var provider by SensorScheme.provider
     var name by SensorScheme.name
     var workplace_id by SensorScheme.workplace_id
 }

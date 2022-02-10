@@ -33,11 +33,19 @@ class WorkplaceService {
 
     private fun setMainDashboardItems(row: ResultRow): MainDashboardItem {
         println(row.toString());
-        var items: ArrayList<String> = ArrayList();
+        var items: ArrayList<MainDashboardSubItem> = ArrayList();
         SensorScheme.selectAll().orderBy(SensorScheme.id to SortOrder.ASC).forEach {
             if (row[WorkplaceScheme.id].value == it[SensorScheme.workplace_id]) {
                 println("############ : " + it.get(SensorScheme.name));
-                items.add(it.get(SensorScheme.name))
+                items.add(
+                    MainDashboardSubItem(
+                        id = it.get(SensorScheme.id).value,
+                        name = it.get(SensorScheme.name),
+                        mac = it.get(SensorScheme.mac),
+                        model = it.get(SensorScheme.model),
+                        provider = "DEMO"
+                    )
+                )
             }
         }
         //TODO 여기서부터 진동센서 명칭 받아서 MainDashboardItem과 종합하여 반환해볼것

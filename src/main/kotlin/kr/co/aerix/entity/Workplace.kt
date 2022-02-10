@@ -19,4 +19,12 @@ class Workplace(id: EntityID<Int>) : IntEntity(id) {
 
 data class Workplace_domain(val id: Int, val name: String)
 
-data class MainDashboardItem(val id: Int, val name: String, val items: List<String>?)
+data class MainDashboardItem(val id: Int, val name: String, val items: List<MainDashboardSubItem>?)
+
+data class MainDashboardSubItem(
+    val id: Int,
+    val name: String,
+    val mac: String,
+    val provider: String,
+    val model: String
+);

@@ -12,14 +12,4 @@ data class TodoResponse(
     val updatedAt: LocalDateTime
 ) {
 
-    companion object {
-        fun of(todo: Todo) =
-            TodoResponse(
-                id = todo.id.value,
-                content = todo.content,
-                done = todo.done,
-                createdAt = todo.createdAt,
-                updatedAt = todo.updatedAt
-            )
-    }
 }

@@ -8,10 +8,11 @@ import io.ktor.response.*
 import io.ktor.routing.*
 import kr.co.aerix.model.SensorRequest
 import kr.co.aerix.service.SensorService
+import kr.co.aerix.service.WorkplaceService
 import main.kotlin.model.TodoRequest
 
-fun Routing.sensor(service: SensorService) {
-    route("/sensor") {
+fun Routing.sensor(service: SensorService, returnService: WorkplaceService) {
+    route("/demo") {
         get {
             call.respond(service.getAll())
         }
@@ -19,18 +20,29 @@ fun Routing.sensor(service: SensorService) {
             val id = call.parameters["id"]?.toIntOrNull() ?: throw BadRequestException("Parameter id is null");
             call.respond(service.getById(id))
         }
-        post {
+
+        delete("/sensor/{id}") {
+            val id = call.parameters["id"]?.toIntOrNull()
+                ?: throw BadRequestException("Parameter id is null")
+            service.delete(id)
+            call.respond(
+                returnService.getMainDashboardItems()
+            ).apply { HttpStatusCode.OK }
+        }
+
+        post("/sensor") {
             val body = call.receive<SensorRequest>()
             println(body.name);
-
             service.new(
                 mac = body.mac,
                 model = body.model,
                 name = body.name,
                 provider = body.provider,
-                workplace_id = body.workplace_id
+                placeId = body.placeId
             )
-            call.response.status(HttpStatusCode.Created)
+            call.respond(
+                returnService.getMainDashboardItems()
+            ).apply { HttpStatusCode.OK }
         }
     }
 }

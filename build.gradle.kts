@@ -8,11 +8,13 @@ val h2_version: String by project
 val hikari_version: String by project
 val log_version: String by project
 val jackson_version: String by project
+val psql_version: String by project
 
 
 plugins {
     application
     kotlin("jvm") version "1.6.10"
+    id("com.github.johnrengelman.shadow") version "7.0.0"
 }
 
 group = "kr.co.aerix"
@@ -35,6 +37,7 @@ dependencies {
     testImplementation("io.ktor:ktor-server-tests:$ktor_version")
     testImplementation("org.jetbrains.kotlin:kotlin-test-junit:$kotlin_version")
     implementation("io.ktor:ktor-jackson:$ktor_version")
+    implementation("io.ktor:ktor-client-gson:$ktor_version")
 
     //jdbc
     implementation("org.jetbrains.exposed:exposed-core:$exposed_version")
@@ -45,6 +48,7 @@ dependencies {
     //DB
     implementation("com.h2database:h2:$h2_version")
     implementation("com.zaxxer:HikariCP:$hikari_version")
+    implementation("org.postgresql:postgresql:$psql_version")
 
     //logging
     implementation("ch.qos.logback:logback-classic:$log_version")
@@ -55,4 +59,13 @@ dependencies {
     //others
     implementation("com.fasterxml.jackson.core:jackson-databind:$jackson_version")
     implementation("com.fasterxml.jackson.datatype:jackson-datatype-jsr310:$jackson_version")
+    implementation("org.apache.commons:commons-math3:3.6.1")
+}
+
+tasks {
+    shadowJar {
+        manifest {
+            attributes(Pair("Main-Class", "com.example.ApplicationKt"))
+        }
+    }
 }

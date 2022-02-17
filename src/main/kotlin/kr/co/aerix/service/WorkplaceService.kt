@@ -6,12 +6,11 @@ import kr.co.aerix.model.WorkplaceResponse
 import kr.co.aerix.plugins.query
 import org.jetbrains.exposed.sql.ResultRow
 import org.jetbrains.exposed.sql.SortOrder
-import org.jetbrains.exposed.sql.select
 import org.jetbrains.exposed.sql.selectAll
 import org.jetbrains.exposed.sql.transactions.experimental.newSuspendedTransaction
 
 class WorkplaceService {
-    suspend fun getAll(): List<Workplace_domain> = newSuspendedTransaction {
+    suspend fun getAll(): List<Workplace_domain> = query {
         WorkplaceScheme.selectAll().map {
             toWorkplace(it)
         }
@@ -25,7 +24,14 @@ class WorkplaceService {
         )
     }
 
-    suspend fun getMainDashboardItems(): List<MainDashboardItem> = newSuspendedTransaction {
+    suspend fun delete(placeid: Int) = query {
+        Sensor.find { SensorScheme.placeId.eq(placeid) }.forEach {
+            Sensor.findById(it.id)?.delete() ?: throw NotFoundException()
+        }
+        Workplace.findById(placeid)?.delete() ?: throw NotFoundException()
+    }
+
+    suspend fun getMainDashboardItems(): List<MainDashboardItem> = query {
         WorkplaceScheme.selectAll().orderBy(WorkplaceScheme.id to SortOrder.ASC).map {
             setMainDashboardItems(it)
         }
@@ -34,8 +40,9 @@ class WorkplaceService {
     private fun setMainDashboardItems(row: ResultRow): MainDashboardItem {
         println(row.toString());
         var items: ArrayList<MainDashboardSubItem> = ArrayList();
+
         SensorScheme.selectAll().orderBy(SensorScheme.id to SortOrder.ASC).forEach {
-            if (row[WorkplaceScheme.id].value == it[SensorScheme.workplace_id]) {
+            if (row[WorkplaceScheme.id].value == it[SensorScheme.placeId]) {
                 println("############ : " + it.get(SensorScheme.name));
                 items.add(
                     MainDashboardSubItem(
@@ -43,7 +50,8 @@ class WorkplaceService {
                         name = it.get(SensorScheme.name),
                         mac = it.get(SensorScheme.mac),
                         model = it.get(SensorScheme.model),
-                        provider = "DEMO"
+                        provider = it.get(SensorScheme.provider),
+                        placeId = it.get(SensorScheme.name)
                     )
                 )
             }

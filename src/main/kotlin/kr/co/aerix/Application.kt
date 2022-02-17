@@ -1,18 +1,13 @@
 package kr.co.aerix
 
 import io.ktor.application.*
+import io.ktor.client.features.json.*
 import io.ktor.features.*
 import io.ktor.http.*
 import io.ktor.routing.*
 import kr.co.aerix.plugins.*
-import kr.co.aerix.router.facility
-import kr.co.aerix.router.sensor
-import kr.co.aerix.router.todo
-import kr.co.aerix.router.workplace
-import kr.co.aerix.service.FacilityService
-import kr.co.aerix.service.SensorService
-import kr.co.aerix.service.TodoService
-import kr.co.aerix.service.WorkplaceService
+import kr.co.aerix.router.*
+import kr.co.aerix.service.*
 
 fun main(args: Array<String>): Unit =
     io.ktor.server.netty.EngineMain.main(args)
@@ -25,11 +20,10 @@ fun Application.module() {
 
     //custom
     DatabaseInitializer.init()
-
     install(Routing) {
-        todo(TodoService())
         workplace(WorkplaceService())
         facility(FacilityService())
-        sensor(SensorService())
+        sensor(SensorService(), WorkplaceService())
+        data(DataService(), SensorService())
     }
 }

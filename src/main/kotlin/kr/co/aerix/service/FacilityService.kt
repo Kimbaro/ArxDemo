@@ -3,10 +3,7 @@ package kr.co.aerix.service
 import io.ktor.features.*
 import kr.co.aerix.entity.Facility
 import kr.co.aerix.entity.FacilityScheme
-import kr.co.aerix.entity.Workplace
-import kr.co.aerix.entity.WorkplaceScheme
 import kr.co.aerix.model.FacilityResponse
-import kr.co.aerix.model.WorkplaceResponse
 import kr.co.aerix.plugins.query
 import org.jetbrains.exposed.sql.SortOrder
 

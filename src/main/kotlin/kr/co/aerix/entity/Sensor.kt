@@ -14,7 +14,7 @@ object SensorScheme : IntIdTable() {
     val status = text("status").default("UNKNOWN");
     val provider = text("provider")
     val name = text("name");
-    val workplace_id = integer("workplace_id").references(WorkplaceScheme.id)
+    val placeId = integer("placeId").references(WorkplaceScheme.id)
 }
 
 class Sensor(id: EntityID<Int>) : IntEntity(id) {
@@ -25,7 +25,7 @@ class Sensor(id: EntityID<Int>) : IntEntity(id) {
     var status by SensorScheme.status
     var provider by SensorScheme.provider
     var name by SensorScheme.name
-    var workplace_id by SensorScheme.workplace_id
+    var placeId by SensorScheme.placeId
 }
 
 data class Sensor_domain(val mac: String, val name: String);

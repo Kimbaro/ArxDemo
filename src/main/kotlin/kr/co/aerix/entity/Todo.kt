@@ -6,6 +6,7 @@ import org.jetbrains.exposed.dao.id.EntityID
 import org.jetbrains.exposed.dao.id.IntIdTable
 import org.jetbrains.exposed.sql.javatime.datetime
 import java.time.LocalDateTime
+import java.util.*
 
 // Table scheme
 object Todos : IntIdTable() {
@@ -16,11 +17,8 @@ object Todos : IntIdTable() {
 }
 
 // Entity
-class Todo(id: EntityID<Int>) : IntEntity(id) {
-    companion object : IntEntityClass<Todo>(Todos)
-
-    var content by Todos.content
-    var done by Todos.done
-    var createdAt by Todos.createdAt
-    var updatedAt by Todos.updatedAt
+class Todo(){
+    companion object{
+        var old_date: Date? = null;
+    }
 }

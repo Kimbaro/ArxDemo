@@ -9,7 +9,7 @@ data class SensorResponse(
     val status: String?,
     val name: String,
     val provider: String,
-    val workplace_id: Int
+    val placeId: Int
 ) {
     companion object {
         fun of(sensor: Sensor) =
@@ -19,7 +19,7 @@ data class SensorResponse(
                 status = sensor.status,
                 name = sensor.name,
                 provider = sensor.provider,
-                workplace_id = sensor.workplace_id
+                placeId = sensor.placeId
             )
     }
 }

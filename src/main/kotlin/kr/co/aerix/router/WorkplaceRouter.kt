@@ -11,24 +11,29 @@ import kr.co.aerix.service.WorkplaceService
 import main.kotlin.model.TodoRequest
 
 fun Routing.workplace(service: WorkplaceService) {
-    route("/workplace") {
-        get {
+    route("/demo") {
+        get("/places") {
 //            call.respond(service.getAll())
             call.respond(service.getMainDashboardItems())
-
         }
-        get("/{id}") {
+/*        get("/{id}") {
             val id = call.parameters["id"]?.toIntOrNull() ?: throw BadRequestException("Parameter id is null");
             var workplace: WorkplaceRequest = service.getById(id)
             println(workplace);
 
             call.respond(service.getById(id))
+        }*/
+        delete("/places/{id}") {
+            val id = call.parameters["id"]?.toIntOrNull()
+                ?: throw BadRequestException("Parameter id is null")
+            service.delete(id)
+            call.respond(service.getMainDashboardItems()).apply { HttpStatusCode.OK }
         }
-        post {
+        post("/place") {
             val body = call.receive<WorkplaceRequest>()
             println(body.name);
             service.new(body.name)
-            call.response.status(HttpStatusCode.Created)
+            call.respond(service.getMainDashboardItems()).apply { HttpStatusCode.OK }
         }
     }
 }

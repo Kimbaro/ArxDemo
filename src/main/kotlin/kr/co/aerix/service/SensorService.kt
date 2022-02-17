@@ -1,13 +1,9 @@
 package kr.co.aerix.service
 
-import io.ktor.application.*
 import io.ktor.features.*
-import io.ktor.http.*
 import kr.co.aerix.entity.*
-import kr.co.aerix.model.FacilityResponse
 import kr.co.aerix.model.SensorResponse
 import kr.co.aerix.plugins.query
-import org.jetbrains.exposed.sql.ResultRow
 import org.jetbrains.exposed.sql.SortOrder
 import org.jetbrains.exposed.sql.select
 import org.jetbrains.exposed.sql.selectAll
@@ -20,17 +16,19 @@ class SensorService {
             .toList()
     }
 
+    suspend fun delete(id: Int) = query {
+        Sensor.findById(id)?.delete() ?: throw NotFoundException()
+    }
+
     suspend fun getById(id: Int) = query {
         Sensor.findById(id)?.run(SensorResponse.Companion::of) ?: throw NotFoundException()
     }
 
-    suspend fun new(mac: String, model: String, name: String, provider: String, workplace_id: Int) =
-        newSuspendedTransaction {
+    suspend fun new(mac: String, model: String, name: String, provider: String, placeId: Int) =
+        query {
             var uniqueCheck: Boolean = false
-            SensorScheme.selectAll().forEach {
-                if (it.get(SensorScheme.mac).equals(mac)) {
-                    uniqueCheck = true;
-                }
+            SensorScheme.select { SensorScheme.mac.eq(mac) }.limit(1).forEach {
+                uniqueCheck = true;
             }
             if (uniqueCheck) {
                 throw IllegalAccessError("중복된 맥주소가 존재합니다.")
@@ -40,7 +38,7 @@ class SensorService {
                     this.model = model
                     this.name = name
                     this.provider = provider
-                    this.workplace_id = workplace_id
+                    this.placeId = placeId
                 }
             }
         }

@@ -26,5 +26,6 @@ data class MainDashboardSubItem(
     val name: String,
     val mac: String,
     val provider: String,
-    val model: String
+    val model: String,
+    val placeId: String
 );

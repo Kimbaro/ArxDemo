@@ -11,5 +11,5 @@ data class SensorRequest(
     val status: String?,
     val name: String,
     val provider:String,
-    val workplace_id: Int
+    val placeId: Int
 );

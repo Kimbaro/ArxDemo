@@ -57,9 +57,10 @@ dependencies {
     testImplementation("io.ktor:ktor-server-tests:$ktor_version")
 
     //others
-    implementation("com.fasterxml.jackson.core:jackson-databind:$jackson_version")
+//    implementation("com.fasterxml.jackson.core:jackson-databind:$jackson_version")
     implementation("com.fasterxml.jackson.datatype:jackson-datatype-jsr310:$jackson_version")
     implementation("org.apache.commons:commons-math3:3.6.1")
+    implementation("com.github.wendykierp:JTransforms:3.1")
 }
 
 tasks {

@@ -20,5 +20,6 @@ object Todos : IntIdTable() {
 class Todo(){
     companion object{
         var old_date: Date? = null;
+        var fft_result: List<GraphData_domain>? = null;
     }
 }

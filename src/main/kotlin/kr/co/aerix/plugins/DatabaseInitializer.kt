@@ -10,6 +10,7 @@ import org.jetbrains.exposed.sql.SchemaUtils.create
 import org.jetbrains.exposed.sql.insert
 import org.jetbrains.exposed.sql.transactions.TransactionManager
 import org.jetbrains.exposed.sql.transactions.transaction
+import org.jetbrains.exposed.sql.transactions.transactionManager
 import java.sql.ResultSet
 
 
@@ -82,7 +83,7 @@ private fun hikariConfig() = HikariConfig().apply {
 private fun hikariConfigByPSQL() = HikariConfig().apply {
     driverClassName = "org.postgresql.Driver"
     jdbcUrl = "jdbc:postgresql://112.175.232.200:5432/postgres"
-    maximumPoolSize = 3
+    maximumPoolSize = 10
     isAutoCommit = false
     username = "postgres"
     password = "!aerix123"
@@ -100,20 +101,4 @@ suspend fun <T> query_psql(block: () -> T): T = withContext(Dispatchers.IO) {
     transaction(DatabaseInitializer.db_psql) {
         block()
     }
-}
-
-//
-//suspend fun <T> native_query_psql(block: () -> T): T = withContext(Dispatchers.IO) {
-//    transaction(DatabaseInitializer.db_psql) {
-//        exec()
-//    }
-//}
-suspend fun <T : Any> String.execAndMap(transform: (ResultSet) -> T): List<T> {
-    val result = arrayListOf<T>()
-    TransactionManager.current().exec(this) { rs ->
-        while (rs.next()) {
-            result += transform(rs)
-        }
-    }
-    return result
 }

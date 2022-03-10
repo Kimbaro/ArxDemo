@@ -2,8 +2,10 @@ package kr.co.aerix.service
 
 import com.google.gson.JsonObject
 import com.google.gson.JsonParser
+import io.ktor.util.*
 import kr.co.aerix.entity.*
 import kr.co.aerix.model.SensorResponse
+import kr.co.aerix.plugins.DatabaseInitializer
 import kr.co.aerix.plugins.query
 import kr.co.aerix.plugins.query_psql
 import org.apache.commons.math3.transform.DftNormalization
@@ -12,32 +14,188 @@ import org.apache.commons.math3.transform.TransformType
 import org.jetbrains.exposed.sql.ResultRow
 import org.jetbrains.exposed.sql.SortOrder
 import org.jetbrains.exposed.sql.selectAll
+import org.jetbrains.exposed.sql.transactions.TransactionManager
+import org.jetbrains.exposed.sql.transactions.transactionManager
+import org.jtransforms.fft.DoubleFFT_1D
+import java.sql.ResultSet
+import java.sql.Timestamp
 import java.text.SimpleDateFormat
 import java.util.*
+import kotlin.collections.ArrayList
 
 
 class DataService {
-    suspend fun getAll(
-        n: Int,
-        sensor: SensorResponse
-    ): List<Data_domain> = query {
-//        TransactionManager.current()
-//            .exec("SELECT * FROM SENSORSCHEME ORDER BY SENSORSCHEME.ID ASC") { rs ->
-//                val result = arrayListOf<Pair<String, String>>()
-//                while (rs.next()) {
-//                    result += rs.getString("SENSORSCHEME.ID") to rs.getString("SENSORSCHEME.ID")
-//                }
-//                result
-//            }?.forEach {
-//                println(it)
-//            }
-        Data.selectAll().orderBy(Data.id to SortOrder.DESC).limit(n)
-            .mapNotNull { toTrendTrueData(it, sensor) }
-        Data.selectAll().limit(1).map {
-            toDataDefault(it)
-        }
+    /*기간별조회*/
+    @OptIn(InternalAPI::class)
+    suspend fun getDateRangeData(
+        sensor: SensorResponse,
+        startDate: Long? = null,
+        endDate: Long? = null
+    ): List<GraphData_domain> = query_psql {
+        ("SELECT data.mbr_no,\n" +
+                "                EXTRACT(EPOCH FROM (TO_TIMESTAMP(replace(data.receivedtime,'\"',''), 'YYYY-MM-DD\\\"T\\\"HH24:MI:SS'))) * 1000 as receivedtime,\n" +
+                "                value\n" +
+                "                FROM data\n" +
+                "                where\n" +
+                "                (EXTRACT(EPOCH FROM (TO_TIMESTAMP(replace(data.receivedtime,'\"',''), 'YYYY-MM-DD\\\"T\\\"HH24:MI:SS'))) * 1000) >= ${startDate}\n" +
+                "                AND (EXTRACT(EPOCH FROM (TO_TIMESTAMP(replace(data.receivedtime,'\"',''), 'YYYY-MM-DD\\\"T\\\"HH24:MI:SS'))) * 1000) < ${endDate} AND\n" +
+                "                data.mac ='${sensor.mac}'\n" +
+                "                order by(data.mbr_no) desc")
+            .getDefaultExecAndMap {
+
+                var jsonData2: JsonObject = JsonParser().parse(it.getString("value")).asJsonObject;
+                var graphdataDomain: GraphData_domain? = null
+                println(jsonData2);
+                jsonData2.keySet().toList().forEach { s ->
+                    var parsing_datas = jsonData2.get("parsing").toString();
+                    var parsing_list: List<String> =
+                        parsing_datas.substring(1, parsing_datas.length - 1).split(",").toList()
+                    var currentDate =
+                        Timestamp.valueOf(Date(it.getLong("receivedtime")).toLocalDateTime().plusHours(9L));
+                    var x: _Data_domain =
+                        _Data_domain(x = currentDate.toGMTString(), y = parsing_list.get(0))
+                    var y: _Data_domain =
+                        _Data_domain(x = currentDate.toGMTString(), y = parsing_list.get(1))
+                    var z: _Data_domain =
+                        _Data_domain(x = currentDate.toGMTString(), y = parsing_list.get(2))
+                    var result: GraphData_domain = GraphData_domain(x, y, z, null)
+                    graphdataDomain = result
+                }
+                graphdataDomain!!
+            }
     }
 
+    /*실시간조회*/
+    @OptIn(InternalAPI::class)
+    suspend fun getRealTimeData(
+        minutes: Int,
+        sensor: SensorResponse
+    ): List<GraphData_domain> = query_psql {
+        ("SELECT data.mbr_no,\n" +
+                "EXTRACT(EPOCH FROM (TO_TIMESTAMP(replace(data.receivedtime,'\"',''), 'YYYY-MM-DD\"T\"HH24:MI:SS\"Z\"'))) * 1000 as receivedtime,\n" +
+                "data.value\n" +
+                "FROM data \n" +
+                "where data.mac ='${sensor.mac}' \n" +
+                "and TO_TIMESTAMP(replace(data.receivedtime,'\"',''), 'YYYY-MM-DD\"T\"HH24:MI:SS\"Z\"') >= now()- interval '${minutes} minutes' \n" +
+                "order by(data.mbr_no) desc;")
+            .getDefaultExecAndMap {
+                var jsonData2: JsonObject = JsonParser().parse(it.getString("value")).asJsonObject;
+                var graphdataDomain: GraphData_domain? = null
+                //println(jsonData2);
+                jsonData2.keySet().toList().forEach { s ->
+                    var parsing_datas = jsonData2.get("parsing").toString();
+                    var parsing_list: List<String> =
+                        parsing_datas.substring(1, parsing_datas.length - 1).split(",").toList()
+                    var currentDate =
+                        Timestamp.valueOf(Date(it.getLong("receivedtime")).toLocalDateTime().plusHours(9L));
+                    var x: _Data_domain =
+                        _Data_domain(x = currentDate.toGMTString(), y = parsing_list.get(0))
+                    var y: _Data_domain =
+                        _Data_domain(x = currentDate.toGMTString(), y = parsing_list.get(1))
+                    var z: _Data_domain =
+                        _Data_domain(x = currentDate.toGMTString(), y = parsing_list.get(2))
+                    var result: GraphData_domain = GraphData_domain(x, y, z, null)
+                    graphdataDomain = result
+                }
+                graphdataDomain!!
+            }
+    }
+
+    private fun <T : Any> String.getDefaultExecAndMap(transform: (ResultSet) -> T): List<T> {
+        val result = arrayListOf<T>()
+        TransactionManager.current().exec(this.toString()) { rs ->
+            while (rs.next()) {
+                result += transform(rs)
+            }
+        }
+        return result
+    }
+
+    @OptIn(InternalAPI::class)
+    suspend fun getRenderData(
+        minutes: Int,
+        sensor: SensorResponse
+    ): List<GraphData_domain> = query_psql {
+        ("SELECT data.mbr_no,\n" +
+                "EXTRACT(EPOCH FROM (TO_TIMESTAMP(replace(data.receivedtime,'\"',''), 'YYYY-MM-DD\"T\"HH24:MI:SS\"Z\"'))) * 1000 as receivedtime,\n" +
+                "data.mac,\n" +
+                "data.value\n" +
+                "FROM data \n" +
+                "where data.mac ='${sensor.mac}' \n" +
+                "and TO_TIMESTAMP(replace(data.receivedtime,'\"',''), 'YYYY-MM-DD\"T\"HH24:MI:SS\"Z\"') >= now()- interval '${minutes} minutes' \n" +
+                "order by(data.mbr_no) desc limit 1024;")
+            .getRenderDataExecAndMap {
+                var graphdataDomain: GraphData_domain? = null
+                var jsonData: JsonObject = JsonParser().parse(it.getString("value")).asJsonObject;
+//                println("테스트1 +=======${it.getString("mac")}")
+//                println("테스트2 +=======${jsonData}")
+                var currentDate =
+                    Timestamp.valueOf(Date(it.getLong("receivedtime")).toLocalDateTime().plusHours(9L));
+                jsonData.keySet().toList().forEach { s ->
+                    if (sensor.mac.equals(it.getString("mac"))) {
+                        var parsing_datas = jsonData.get("parsing").toString();
+                        var parsing_list: List<String> =
+                            parsing_datas.substring(1, parsing_datas.length - 1).split(",").toList()
+                        var x: _Data_domain =
+                            _Data_domain(x = currentDate.toGMTString(), y = parsing_list.get(0))
+                        var y: _Data_domain =
+                            _Data_domain(x = currentDate.toGMTString(), y = parsing_list.get(1))
+                        var z: _Data_domain =
+                            _Data_domain(x = currentDate.toGMTString(), y = parsing_list.get(2))
+                        var result: GraphData_domain = GraphData_domain(x, y, z, null)
+                        //1024 길이의 데이터가 있어야 FFT 값 계산이 가능하므로 다음 로직에서 만듭니다.
+                        //TODO 중요, 아래 주석처리된 로직이 fft값을 계산하는데, 처리 시간이 너무 길어서 다른 방안을 생각해봐야한다.
+                        //TODO 1. 예를 들면 DB에 한번만 접근해서 특정기간 데이터를 모두 불러온 다음에 처리.
+                        graphdataDomain = result
+                    }
+                }
+                graphdataDomain!!
+                //println("${it.getLong("mbr_no")}, ${it.getString("value")}, ${Date(it.getLong("receivedtime"))}");
+            }
+    }
+
+    private fun <T : Any> String.getRenderDataExecAndMap(transform: (ResultSet) -> T): List<T> {
+        var targetTime: Long = Date().time;
+        val result = arrayListOf<T>()
+        TransactionManager.current().exec(this.toString()) { rs ->
+            //시간 60s = 60000
+            while (rs.next()) {
+                if (targetTime - Date(rs.getLong("receivedtime")).time >= 1000) {
+                    targetTime = Date(rs.getLong("receivedtime")).time
+                    result += transform(rs)
+                }
+            }
+        }
+        return result
+    }
+
+    public suspend fun getFFT(size: Int, data_list: ArrayList<_Data_domain>): ArrayList<_Data_domain> {
+        val imaginary_part = DoubleArray(size) //Imaginary Part
+        val fft_list = ArrayList<_Data_domain>();
+        for (i in 0 until size) {
+            imaginary_part[i] = 0.0
+        }
+        val real_part = DoubleArray(size) //Real Part
+        for (i in 0 until size) {
+            real_part[i] = data_list.get(i).y.toDouble()
+        }
+        val fft_part = DoubleArray(2 * size) //fft 수행할 배열 사이즈 2N
+        for (k in 0 until size) {
+            fft_part[2 * k] = real_part.get(k) //real_part
+            fft_part[2 * k + 1] = imaginary_part.get(k) //imaginary_part
+        }
+        val fft = DoubleFFT_1D(size.toLong()) //1차원의 fft 수행
+        fft.complexForward(fft_part) //a 배열에 output overwrite
+        val mag = DoubleArray(size / 2)
+        for (k in 0 until size / 2) {
+            mag[k] = Math.sqrt(Math.pow(fft_part[2 * k], 2.0) + Math.pow(fft_part[2 * k + 1], 2.0))
+            fft_list.add(_Data_domain(Date().toGMTString(), String.format("%.2f", mag[k])))
+        }
+        return fft_list
+    }
+
+
+    // old code#########################################
     suspend fun getLatestCostN(
         n: Int,
         sensor: SensorResponse,
@@ -50,9 +208,16 @@ class DataService {
                 "T435" -> {
                     if (isTrend && startDate == null) {
                         println("최근데이터 검색");
+
+
                         //최근 데이터 검색 selectOne
                         Data.selectAll().orderBy(Data.id to SortOrder.DESC).limit(n)
-                            .map { toTrendTrueData(it, sensor) }
+                            .map {
+                                toTrendTrueData(
+                                    Data_domain(it[Data.id], it[Data.value], it[Data.receivedtime]),
+                                    sensor
+                                )
+                            }
                     } else {
                         println("날짜 범위내 검색");
                         //날짜범위내 검색 selectAll
@@ -141,15 +306,16 @@ class DataService {
         return graphdataDomain
     }
 
-    private fun toTrendTrueData(row: ResultRow, sensor: SensorResponse): GraphData_domain? {
+    //    private fun toTrendTrueData(row: ResultRow, sensor: SensorResponse): GraphData_domain? {
+    private fun toTrendTrueData(row: Data_domain, sensor: SensorResponse): GraphData_domain? {
         var graphdataDomain: GraphData_domain? = null
-        var jsonData: JsonObject = JsonParser().parse(row[Data.value]).asJsonObject;
+        var jsonData: JsonObject = JsonParser().parse(row.value).asJsonObject;
         jsonData.keySet().toList().forEach { s ->
             if (sensor.mac.equals(s.toString())) {
                 jsonData = JsonParser().parse(jsonData.get(s).toString()).asJsonObject
                 //날짜-시간 정보
                 var receivedtimeToString: String =
-                    row[Data.receivedtime].toString().substring(1, row[Data.receivedtime].toString().length - 1)
+                    row.receivedtime.toString().substring(1, row.receivedtime.toString().length - 1)
                         .split(".").get(0)
                 val dateParser = SimpleDateFormat(ISO_8601, Locale.KOREA)
                 var date = dateParser.parse(receivedtimeToString)
@@ -193,7 +359,7 @@ class DataService {
     }
 
     fun getPowerOfTwo(size: Int): Int {
-        for (i in 512 downTo 1) {
+        for (i in 1024 downTo 1) {
             if (i != 0 && i and i - 1 == 0 && size > i) {
                 return i
             }
@@ -235,7 +401,6 @@ class DataService {
     //TODO Fft 배열 1024 만큼 데이터를 가져와 그래프를 구성함
     fun getFftXYZData(data: List<GraphData_domain>?): Map<String, DoubleArray?> {
         var dataSize = data!!.size
-
         val isPowerOfTwo: Boolean = isPowerOfTwo(data.size)
         if (!isPowerOfTwo) {
             dataSize = getPowerOfTwo(data.size)
@@ -252,15 +417,15 @@ class DataService {
         }
 
         //32-bitFFT - 2048~1024, 16-bitFFT - 1024~512, 8-bitFFT - 512~256
-        val powerSpectrumX: DoubleArray? = if (frequencyDomainX.size <= 512 && frequencyDomainX.size >= 16) setFftData(
+        val powerSpectrumX: DoubleArray? = if (frequencyDomainX.size <= 1024 && frequencyDomainX.size >= 32) setFftData(
             frequencyDomainX.size,
             frequencyDomainX
         ) else null
-        val powerSpectrumY: DoubleArray? = if (frequencyDomainY.size <= 512 && frequencyDomainY.size >= 16) setFftData(
+        val powerSpectrumY: DoubleArray? = if (frequencyDomainY.size <= 1024 && frequencyDomainY.size >= 32) setFftData(
             frequencyDomainY.size,
             frequencyDomainY
         ) else null
-        val powerSpectrumZ: DoubleArray? = if (frequencyDomainZ.size <= 512 && frequencyDomainZ.size >= 16) setFftData(
+        val powerSpectrumZ: DoubleArray? = if (frequencyDomainZ.size <= 1024 && frequencyDomainZ.size >= 32) setFftData(
             frequencyDomainZ.size,
             frequencyDomainZ
         ) else null

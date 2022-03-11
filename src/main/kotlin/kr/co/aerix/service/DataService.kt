@@ -5,8 +5,6 @@ import com.google.gson.JsonParser
 import io.ktor.util.*
 import kr.co.aerix.entity.*
 import kr.co.aerix.model.SensorResponse
-import kr.co.aerix.plugins.DatabaseInitializer
-import kr.co.aerix.plugins.query
 import kr.co.aerix.plugins.query_psql
 import org.apache.commons.math3.transform.DftNormalization
 import org.apache.commons.math3.transform.FastFourierTransformer
@@ -15,13 +13,12 @@ import org.jetbrains.exposed.sql.ResultRow
 import org.jetbrains.exposed.sql.SortOrder
 import org.jetbrains.exposed.sql.selectAll
 import org.jetbrains.exposed.sql.transactions.TransactionManager
-import org.jetbrains.exposed.sql.transactions.transactionManager
 import org.jtransforms.fft.DoubleFFT_1D
 import java.sql.ResultSet
 import java.sql.Timestamp
 import java.text.SimpleDateFormat
 import java.util.*
-import kotlin.collections.ArrayList
+import javax.swing.text.html.HTML.Attribute.N
 
 
 class DataService {
@@ -41,7 +38,7 @@ class DataService {
                 "                AND (EXTRACT(EPOCH FROM (TO_TIMESTAMP(replace(data.receivedtime,'\"',''), 'YYYY-MM-DD\\\"T\\\"HH24:MI:SS'))) * 1000) < ${endDate} AND\n" +
                 "                data.mac ='${sensor.mac}'\n" +
                 "                order by(data.mbr_no) desc")
-            .getDefaultExecAndMap {
+            .getDateRangeExec {
 
                 var jsonData2: JsonObject = JsonParser().parse(it.getString("value")).asJsonObject;
                 var graphdataDomain: GraphData_domain? = null
@@ -64,6 +61,22 @@ class DataService {
                 graphdataDomain!!
             }
     }
+    private fun <T : Any> String.getDateRangeExec(transform: (ResultSet) -> T): List<T> {
+        var targetTime: Long = Date().time;
+        val result = arrayListOf<T>()
+        TransactionManager.current().exec(this.toString()) { rs ->
+            //시간 60s = 60000
+            while (rs.next()) {
+                if (targetTime - Date(rs.getLong("receivedtime")).time >= 60000) {
+                    targetTime = Date(rs.getLong("receivedtime")).time
+                    result += transform(rs)
+                }
+            }
+        }
+        return result
+    }
+
+
 
     /*실시간조회*/
     @OptIn(InternalAPI::class)
@@ -123,7 +136,7 @@ class DataService {
                 "FROM data \n" +
                 "where data.mac ='${sensor.mac}' \n" +
                 "and TO_TIMESTAMP(replace(data.receivedtime,'\"',''), 'YYYY-MM-DD\"T\"HH24:MI:SS\"Z\"') >= now()- interval '${minutes} minutes' \n" +
-                "order by(data.mbr_no) desc limit 1024;")
+                "order by(data.mbr_no) desc;")
             .getRenderDataExecAndMap {
                 var graphdataDomain: GraphData_domain? = null
                 var jsonData: JsonObject = JsonParser().parse(it.getString("value")).asJsonObject;
@@ -169,9 +182,9 @@ class DataService {
         return result
     }
 
-    public suspend fun getFFT(size: Int, data_list: ArrayList<_Data_domain>): ArrayList<_Data_domain> {
+    public suspend fun getFFT(size: Int, data_list: ArrayList<_Data_domain>): ArrayList<String> {
         val imaginary_part = DoubleArray(size) //Imaginary Part
-        val fft_list = ArrayList<_Data_domain>();
+        val fft_list = ArrayList<String>();
         for (i in 0 until size) {
             imaginary_part[i] = 0.0
         }
@@ -189,11 +202,11 @@ class DataService {
         val mag = DoubleArray(size / 2)
         for (k in 0 until size / 2) {
             mag[k] = Math.sqrt(Math.pow(fft_part[2 * k], 2.0) + Math.pow(fft_part[2 * k + 1], 2.0))
-            fft_list.add(_Data_domain(Date().toGMTString(), String.format("%.2f", mag[k])))
+//            fft_list.add(_Data_domain(Date().toGMTString(), String.format("%.2f", mag[k])))
+            fft_list.add(String.format("%.2f", mag[k]))
         }
         return fft_list
     }
-
 
     // old code#########################################
     suspend fun getLatestCostN(

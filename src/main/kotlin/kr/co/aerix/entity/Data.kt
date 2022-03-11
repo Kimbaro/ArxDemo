@@ -32,9 +32,9 @@ data class GraphData_domains(
     var fft: FFTGraphData_domains?
 );
 data class FFTGraphData_domains(
-    var x: List<_Data_domain>,
-    var y: List<_Data_domain>,
-    var z: List<_Data_domain>,
+    var x: List<String>,
+    var y: List<String>,
+    var z: List<String>,
 );
 
 data class FFTDatas_domain(val x: _Data_domain, val y: _Data_domain, val z: _Data_domain);

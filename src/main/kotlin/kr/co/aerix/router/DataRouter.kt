@@ -25,6 +25,7 @@ fun Routing.data(service: DataService, findService: SensorService) {
             if (sensorId.isNullOrEmpty()) {
                 throw BadRequestException("아이디가 존재하지 않음");
             }
+
             var datas: List<GraphData_domain> = service.getRenderData(10, sensor) as List<GraphData_domain>
             var x_data_list = ArrayList<_Data_domain>();
             var y_data_list = ArrayList<_Data_domain>();
@@ -34,19 +35,31 @@ fun Routing.data(service: DataService, findService: SensorService) {
                 if (datas.get(i) is GraphData_domain) {
                     try {
                         var it: GraphData_domain = datas.get(i)
-                        x_data_list.add(it.x)
-                        y_data_list.add(it.y)
-                        z_data_list.add(it.z)
+                        println("${sensor.max} ${sensor.min} ${it.x.y.toDouble()} ${it.x.y.toDouble() < sensor.max!!}    &&    ${it.x.y.toDouble() >= sensor.min!!}");
+                        if (sensor.max != null && sensor.min != null) {
+                            if (it.x.y.toDouble() < sensor.max!! && it.x.y.toDouble() >= sensor.min!!) {
+                                x_data_list.add(it.x)
+                            }
+                            if (it.y.y.toDouble() < sensor.max!! && it.y.y.toDouble() >= sensor.min!!) {
+                                y_data_list.add(it.y)
+                            }
+                            if (it.z.y.toDouble() < sensor.max!! && it.z.y.toDouble() >= sensor.min!!) {
+                                z_data_list.add(it.z)
+                            }
+                        }
+//                        x_data_list.add(it.x)
+//                        y_data_list.add(it.y)
+//                        z_data_list.add(it.z)
                     } catch (e: NullPointerException) {
                         continue
                     }
                 }
             }
 
-            /*TODO FFT Calcul X를 예로 테스트 시작함 JTransform 알고리즘*/
+            //TODO 기간별조회 쿼리 적용할것 데이터서비스 모듈 부 참조
             val size: Int = x_data_list.size;
 
-            Logger.getLogger("${call.request.uri}").info("${call.request.uri} FFT 테스트 ###################### ${size}")
+            Logger.getLogger("${call.request.uri}").info("${call.request.uri} FFT SIZE ###################### ${size}")
             var fftGraphDatas: FFTGraphData_domains
             /*----------*/
             runBlocking {
@@ -69,7 +82,6 @@ fun Routing.data(service: DataService, findService: SensorService) {
                 fftGraphDatas = FFTGraphData_domains(x_fft, y_fft, z_fft)
             }
             //println("result === ${fftGraphDatas}");
-            Logger.getLogger("${call.request.uri}").info("${call.request.uri} FFT 테스트 EXIT################### ${size}")
             /*            */
             call.respond(GraphData_domains(x_data_list, y_data_list, z_data_list, fftGraphDatas))
         }
@@ -91,28 +103,34 @@ fun Routing.data(service: DataService, findService: SensorService) {
             if (sensorId.isNullOrEmpty()) {
                 throw BadRequestException("아이디가 존재하지 않음");
             }
-            //startDate == null 실시간조회
             //startDate != null 기간별조회
+            //startDate == null 실시간조회
             if (startDate != null) {
                 //TODO 기간별조회 쿼리 적용할것 데이터서비스 모듈 부 참조
                 var datas: List<GraphData_domain> = service.getDateRangeData(sensor, startDate, endDate)
                 //=============================================
-
                 var x_data_list = ArrayList<_Data_domain>();
                 var y_data_list = ArrayList<_Data_domain>();
                 var z_data_list = ArrayList<_Data_domain>();
                 for (i in 0 until datas.size) {
                     if (datas.get(i) is GraphData_domain) {
                         var it: GraphData_domain = datas.get(i)
-                        x_data_list.add(it.x)
-                        y_data_list.add(it.y)
-                        z_data_list.add(it.z)
+                        println("${sensor.max} ${sensor.min} ${it.x.y.toDouble()} ${it.x.y.toDouble() < sensor.max!!}    &&    ${it.x.y.toDouble() >= sensor.min!!}");
+                        if (sensor.max != null && sensor.min != null) {
+                            if (it.x.y.toDouble() < sensor.max!! && it.x.y.toDouble() >= sensor.min!!) {
+                                x_data_list.add(it.x)
+                            }
+                            if (it.y.y.toDouble() < sensor.max!! && it.y.y.toDouble() >= sensor.min!!) {
+                                y_data_list.add(it.y)
+                            }
+                            if (it.z.y.toDouble() < sensor.max!! && it.z.y.toDouble() >= sensor.min!!) {
+                                z_data_list.add(it.z)
+                            }
+                        }
                     }
                 }
                 Todo.old_date = null;
 
-                Logger.getLogger("${call.request.uri}")
-                    .info("${call.request.uri} FFT 테스트 ###################### ${datas.size}")
                 var fftGraphDatas: FFTGraphData_domains
                 /*----------*/
                 runBlocking {
@@ -134,7 +152,6 @@ fun Routing.data(service: DataService, findService: SensorService) {
                     z.join()
                     fftGraphDatas = FFTGraphData_domains(x_fft, y_fft, z_fft)
                 }
-                Logger.getLogger("").info("${call.request.uri} FFT 테스트 EXIT###################")
 
                 call.respond(GraphData_domains(x_data_list, y_data_list, z_data_list, fftGraphDatas))
             } else {
@@ -151,9 +168,18 @@ fun Routing.data(service: DataService, findService: SensorService) {
                         if (datas.get(i) is GraphData_domain) {
                             try {
                                 var it: GraphData_domain = datas.get(i)
-                                x_data_list.add(it.x)
-                                y_data_list.add(it.y)
-                                z_data_list.add(it.z)
+                                println("${sensor.max} ${sensor.min} ${it.x.y.toDouble()} ${it.x.y.toDouble() < sensor.max!!}    &&    ${it.x.y.toDouble() >= sensor.min!!}");
+                                if (sensor.max != null && sensor.min != null) {
+                                    if (it.x.y.toDouble() < sensor.max!! && it.x.y.toDouble() >= sensor.min!!) {
+                                        x_data_list.add(it.x)
+                                    }
+                                    if (it.y.y.toDouble() < sensor.max!! && it.y.y.toDouble() >= sensor.min!!) {
+                                        y_data_list.add(it.y)
+                                    }
+                                    if (it.z.y.toDouble() < sensor.max!! && it.z.y.toDouble() >= sensor.min!!) {
+                                        z_data_list.add(it.z)
+                                    }
+                                }
                             } catch (e: NullPointerException) {
                                 continue
                             }

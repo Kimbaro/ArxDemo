@@ -6,6 +6,7 @@ import io.ktor.http.*
 import io.ktor.request.*
 import io.ktor.response.*
 import io.ktor.routing.*
+import kr.co.aerix.model.WorkplacePatch
 import kr.co.aerix.model.WorkplaceRequest
 import kr.co.aerix.service.WorkplaceService
 import main.kotlin.model.TodoRequest
@@ -23,6 +24,11 @@ fun Routing.workplace(service: WorkplaceService) {
 
             call.respond(service.getById(id))
         }*/
+        patch("/place") {
+            val body = call.receive<WorkplacePatch>()
+            service.patch(body);
+            call.respond(HttpStatusCode.OK)
+        }
         delete("/places/{id}") {
             val id = call.parameters["id"]?.toIntOrNull()
                 ?: throw BadRequestException("Parameter id is null")

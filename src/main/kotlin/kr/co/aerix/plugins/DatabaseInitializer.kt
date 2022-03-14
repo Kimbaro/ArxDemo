@@ -25,6 +25,8 @@ object DatabaseInitializer {
                 it[name] = "에어릭스"
             }
             SensorScheme.insert {
+                it[max] = 0.05
+                it[min] = 0.02
                 it[mac] = "F0:B5:D1:9F:24:D8"
                 it[name] = "진동센서(D8)"
                 it[model] = "T435"
@@ -32,6 +34,8 @@ object DatabaseInitializer {
                 it[placeId] = 1
             }
             SensorScheme.insert {
+                it[max] = 0.05
+                it[min] = 0.02
                 it[mac] = "F0:B5:D1:9E:60:CE"
                 it[name] = "진동센서(CE)"
                 it[model] = "T435"
@@ -39,6 +43,8 @@ object DatabaseInitializer {
                 it[placeId] = 1
             }
             SensorScheme.insert {
+                it[max] = 0.05
+                it[min] = 0.02
                 it[mac] = "F0:B5:D1:9E:55:B3"
                 it[name] = "진동센서(B3)"
                 it[model] = "T435"
@@ -46,6 +52,8 @@ object DatabaseInitializer {
                 it[placeId] = 1
             }
             SensorScheme.insert {
+                it[max] = 0.05
+                it[min] = 0.02
                 it[mac] = "90:E2:02:07:9F:BD"
                 it[name] = "진동센서(BD)"
                 it[model] = "T435"
@@ -53,6 +61,8 @@ object DatabaseInitializer {
                 it[placeId] = 1
             }
             SensorScheme.insert {
+                it[max] = 0.05
+                it[min] = 0.02
                 it[mac] = "F0:B5:D1:9F:28:02"
                 it[name] = "진동센서(02)"
                 it[model] = "T435"

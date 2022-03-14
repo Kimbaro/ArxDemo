@@ -9,7 +9,9 @@ data class SensorResponse(
     val status: String?,
     val name: String,
     val provider: String,
-    val placeId: Int
+    val placeId: Int,
+    val min: Double?,
+    val max: Double?
 ) {
     companion object {
         fun of(sensor: Sensor) =
@@ -19,7 +21,9 @@ data class SensorResponse(
                 status = sensor.status,
                 name = sensor.name,
                 provider = sensor.provider,
-                placeId = sensor.placeId
+                placeId = sensor.placeId,
+                min = sensor.min,
+                max = sensor.max
             )
     }
 }

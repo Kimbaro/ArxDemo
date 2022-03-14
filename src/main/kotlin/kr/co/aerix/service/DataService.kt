@@ -47,6 +47,7 @@ class DataService {
                     var parsing_datas = jsonData2.get("parsing").toString();
                     var parsing_list: List<String> =
                         parsing_datas.substring(1, parsing_datas.length - 1).split(",").toList()
+                    //TODO MIN, MAX 범위내 값만 저장
                     var currentDate =
                         Timestamp.valueOf(Date(it.getLong("receivedtime")).toLocalDateTime().plusHours(9L));
                     var x: _Data_domain =
@@ -99,6 +100,7 @@ class DataService {
                     var parsing_datas = jsonData2.get("parsing").toString();
                     var parsing_list: List<String> =
                         parsing_datas.substring(1, parsing_datas.length - 1).split(",").toList()
+                    //TODO MIN, MAX 범위내 값만 저장
                     var currentDate =
                         Timestamp.valueOf(Date(it.getLong("receivedtime")).toLocalDateTime().plusHours(9L));
                     var x: _Data_domain =
@@ -149,6 +151,7 @@ class DataService {
                         var parsing_datas = jsonData.get("parsing").toString();
                         var parsing_list: List<String> =
                             parsing_datas.substring(1, parsing_datas.length - 1).split(",").toList()
+                        //TODO MIN, MAX 범위내 값만 저장
                         var x: _Data_domain =
                             _Data_domain(x = currentDate.toGMTString(), y = parsing_list.get(0))
                         var y: _Data_domain =
@@ -156,9 +159,7 @@ class DataService {
                         var z: _Data_domain =
                             _Data_domain(x = currentDate.toGMTString(), y = parsing_list.get(2))
                         var result: GraphData_domain = GraphData_domain(x, y, z, null)
-                        //1024 길이의 데이터가 있어야 FFT 값 계산이 가능하므로 다음 로직에서 만듭니다.
-                        //TODO 중요, 아래 주석처리된 로직이 fft값을 계산하는데, 처리 시간이 너무 길어서 다른 방안을 생각해봐야한다.
-                        //TODO 1. 예를 들면 DB에 한번만 접근해서 특정기간 데이터를 모두 불러온 다음에 처리.
+
                         graphdataDomain = result
                     }
                 }

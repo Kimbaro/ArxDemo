@@ -2,12 +2,12 @@ package kr.co.aerix.service
 
 import io.ktor.features.*
 import kr.co.aerix.entity.*
+import kr.co.aerix.model.WorkplacePatch
 import kr.co.aerix.model.WorkplaceResponse
 import kr.co.aerix.plugins.query
 import org.jetbrains.exposed.sql.ResultRow
 import org.jetbrains.exposed.sql.SortOrder
 import org.jetbrains.exposed.sql.selectAll
-import org.jetbrains.exposed.sql.transactions.experimental.newSuspendedTransaction
 
 class WorkplaceService {
     suspend fun getAll(): List<Workplace_domain> = query {
@@ -51,7 +51,9 @@ class WorkplaceService {
                         mac = it.get(SensorScheme.mac),
                         model = it.get(SensorScheme.model),
                         provider = it.get(SensorScheme.provider),
-                        placeId = it.get(SensorScheme.name)
+                        placeId = it.get(SensorScheme.name),
+                        min = it.get(SensorScheme.min) as Double,
+                        max = it.get(SensorScheme.max) as Double,
                     )
                 )
             }
@@ -71,6 +73,13 @@ class WorkplaceService {
 
     suspend fun getById(id: Int) = query {
         Workplace.findById(id)?.run(WorkplaceResponse.Companion::of) ?: throw NotFoundException()
+    }
+
+    suspend fun patch(req: WorkplacePatch) = query {
+        val patcher = Workplace.findById(req.id) ?: throw NotFoundException()
+        patcher.apply {
+            name = req.name
+        }
     }
 
     suspend fun new(name: String) = query {

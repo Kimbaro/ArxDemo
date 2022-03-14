@@ -6,7 +6,9 @@ import io.ktor.http.*
 import io.ktor.request.*
 import io.ktor.response.*
 import io.ktor.routing.*
+import kr.co.aerix.model.SensorPatch
 import kr.co.aerix.model.SensorRequest
+import kr.co.aerix.model.WorkplacePatch
 import kr.co.aerix.service.SensorService
 import kr.co.aerix.service.WorkplaceService
 import main.kotlin.model.TodoRequest
@@ -28,6 +30,12 @@ fun Routing.sensor(service: SensorService, returnService: WorkplaceService) {
             call.respond(
                 returnService.getMainDashboardItems()
             ).apply { HttpStatusCode.OK }
+        }
+
+        patch("/sensor") {
+            val body = call.receive<SensorPatch>()
+            service.patch(body)
+            call.respond(HttpStatusCode.OK)
         }
 
         post("/sensor") {

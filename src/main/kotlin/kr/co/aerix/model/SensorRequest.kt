@@ -10,6 +10,22 @@ data class SensorRequest(
     val model: String,
     val status: String?,
     val name: String,
-    val provider:String,
-    val placeId: Int
+    val provider: String,
+    val placeId: Int,
+    val min: Double,
+    val max: Double,
 );
+
+data class SensorPatch(
+    val id:Int,
+    val mac: String,
+    val model: String,
+    val status: String?,
+    val name: String,
+    val provider: String,
+    val placeId: Int,
+    val min: Double,
+    val max: Double,
+);
+
+

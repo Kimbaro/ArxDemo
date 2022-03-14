@@ -15,17 +15,20 @@ object SensorScheme : IntIdTable() {
     val provider = text("provider")
     val name = text("name");
     val placeId = integer("placeId").references(WorkplaceScheme.id)
+    val min = double("min").nullable()
+    val max = double("max").nullable()
 }
 
 class Sensor(id: EntityID<Int>) : IntEntity(id) {
     companion object : IntEntityClass<Sensor>(SensorScheme)
-
     var mac by SensorScheme.mac
     var model by SensorScheme.model
     var status by SensorScheme.status
     var provider by SensorScheme.provider
     var name by SensorScheme.name
     var placeId by SensorScheme.placeId
+    var min by SensorScheme.min
+    var max by SensorScheme.max
 }
 
 data class Sensor_domain(val mac: String, val name: String);

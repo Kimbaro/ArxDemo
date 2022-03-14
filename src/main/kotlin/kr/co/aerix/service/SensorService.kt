@@ -2,6 +2,7 @@ package kr.co.aerix.service
 
 import io.ktor.features.*
 import kr.co.aerix.entity.*
+import kr.co.aerix.model.SensorPatch
 import kr.co.aerix.model.SensorResponse
 import kr.co.aerix.plugins.query
 import org.jetbrains.exposed.sql.SortOrder
@@ -22,6 +23,21 @@ class SensorService {
 
     suspend fun getById(id: Int) = query {
         Sensor.findById(id)?.run(SensorResponse.Companion::of) ?: throw NotFoundException()
+    }
+
+    suspend fun patch(req: SensorPatch) = query {
+        val patcher = Sensor.findById(req.id) ?: throw NotFoundException();
+        if (req.min != null && req.max != null) {
+            patcher.apply {
+                mac = req.mac
+                model = req.model
+                name = req.name
+                provider = req.provider
+                min = req.min
+                max = req.max
+            }
+        }else{
+        }
     }
 
     suspend fun new(mac: String, model: String, name: String, provider: String, placeId: Int) =

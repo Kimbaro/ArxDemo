@@ -63,6 +63,8 @@ dependencies {
     implementation("org.apache.commons:commons-math3:3.6.1")
     implementation("com.github.wendykierp:JTransforms:3.1")
     implementation("io.ktor:ktor-network-tls-certificates:$ktorVersion")
+    implementation("io.ktor:ktor-auth:$ktor_version")
+    implementation("io.ktor:ktor-auth-jwt:$ktor_version")
 }
 
 tasks {

@@ -11,6 +11,7 @@ import kr.co.aerix.entity.*
 import kr.co.aerix.model.SensorResponse
 import kr.co.aerix.service.DataService
 import kr.co.aerix.service.SensorService
+import java.lang.IllegalArgumentException
 import java.util.logging.Logger
 
 
@@ -196,13 +197,25 @@ fun Routing.data(service: DataService, findService: SensorService) {
                         var z_fft: List<String> = ArrayList<String>()
 
                         val x = launch {
-                            x_fft = service.getFFT(x_data_list.size, x_data_list).toList() as ArrayList<String>
+                            try {
+                                x_fft = service.getFFT(x_data_list.size, x_data_list).toList() as ArrayList<String>
+                            } catch (e: IllegalArgumentException) {
+                                x_fft = ArrayList<String>()
+                            }
                         }
                         val y = launch {
-                            y_fft = service.getFFT(y_data_list.size, y_data_list).toList() as ArrayList<String>
+                            try {
+                                y_fft = service.getFFT(y_data_list.size, y_data_list).toList() as ArrayList<String>
+                            } catch (e: IllegalArgumentException) {
+                                y_fft = ArrayList<String>()
+                            }
                         }
                         val z = launch {
-                            z_fft = service.getFFT(z_data_list.size, z_data_list).toList() as ArrayList<String>
+                            try {
+                                z_fft = service.getFFT(z_data_list.size, z_data_list).toList() as ArrayList<String>
+                            } catch (e: IllegalArgumentException) {
+                                z_fft = ArrayList<String>()
+                            }
                         }
                         x.join()
                         y.join()

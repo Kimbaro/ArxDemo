@@ -35,7 +35,21 @@ fun Routing.sensor(service: SensorService, returnService: WorkplaceService) {
         patch("/sensor") {
             val body = call.receive<SensorPatch>()
             service.patch(body)
-            call.respond(HttpStatusCode.OK)
+            call.respond(
+                SensorPatch(
+                    id = body.id,
+                    mac = body.mac,
+                    model = body.model,
+                    status = body.status,
+                    name = body.name,
+                    provider = body.provider,
+                    placeId = body.placeId,
+                    min = body.min,
+                    max = body.max
+                )
+            ).apply {
+                HttpStatusCode.OK
+            }
         }
 
         post("/sensor") {

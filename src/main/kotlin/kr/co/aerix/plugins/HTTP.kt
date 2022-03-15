@@ -18,10 +18,10 @@ fun Application.configureHTTP() {
         method(HttpMethod.Put)
         method(HttpMethod.Delete)
         method(HttpMethod.Patch)
-        header(HttpHeaders.AccessControlAllowHeaders)
         header(HttpHeaders.ContentType)
-        header(HttpHeaders.AccessControlAllowOrigin)
         anyHost()
+        //header(HttpHeaders.AccessControlAllowHeaders)
+        //header(HttpHeaders.AccessControlAllowOrigin)
     }
 }
 

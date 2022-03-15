@@ -42,7 +42,6 @@ class DataService {
 
                 var jsonData2: JsonObject = JsonParser().parse(it.getString("value")).asJsonObject;
                 var graphdataDomain: GraphData_domain? = null
-                println(jsonData2);
                 jsonData2.keySet().toList().forEach { s ->
                     var parsing_datas = jsonData2.get("parsing").toString();
                     var parsing_list: List<String> =
@@ -292,7 +291,7 @@ class DataService {
                 date = cal.time
                 if (Todo.old_date != null) {
                     if ((Todo.old_date!!.time - date.time) >= 120000) {
-                        println("${Todo.old_date!!.time}   -   ${date.time} = ${Todo.old_date!!.time - date.time}");
+                        //println("${Todo.old_date!!.time}   -   ${date.time} = ${Todo.old_date!!.time - date.time}");
                         var parsing_datas = jsonData.get("parsing").toString();
                         var parsing_list: List<String> =
                             parsing_datas.substring(1, parsing_datas.length - 1).split(",").toList()

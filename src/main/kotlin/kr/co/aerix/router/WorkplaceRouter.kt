@@ -26,8 +26,10 @@ fun Routing.workplace(service: WorkplaceService) {
         }*/
         patch("/place") {
             val body = call.receive<WorkplacePatch>()
-            service.patch(body);
-            call.respond(HttpStatusCode.OK)
+            service.patch(body)
+            call.respond(WorkplacePatch(id = body.id, name = body.name)).apply {
+                HttpStatusCode.OK
+            }
         }
         delete("/places/{id}") {
             val id = call.parameters["id"]?.toIntOrNull()

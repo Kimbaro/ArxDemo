@@ -35,7 +35,7 @@ fun Routing.data(service: DataService, findService: SensorService) {
                 if (datas.get(i) is GraphData_domain) {
                     try {
                         var it: GraphData_domain = datas.get(i)
-                        println("${sensor.max} ${sensor.min} ${it.x.y.toDouble()} ${it.x.y.toDouble() < sensor.max!!}    &&    ${it.x.y.toDouble() >= sensor.min!!}");
+                        //println("${sensor.max} ${sensor.min} ${it.x.y.toDouble()} ${it.x.y.toDouble() < sensor.max!!}    &&    ${it.x.y.toDouble() >= sensor.min!!}");
                         if (sensor.max != null && sensor.min != null) {
                             if (it.x.y.toDouble() < sensor.max!! && it.x.y.toDouble() >= sensor.min!!) {
                                 x_data_list.add(it.x)
@@ -115,7 +115,7 @@ fun Routing.data(service: DataService, findService: SensorService) {
                 for (i in 0 until datas.size) {
                     if (datas.get(i) is GraphData_domain) {
                         var it: GraphData_domain = datas.get(i)
-                        println("${sensor.max} ${sensor.min} ${it.x.y.toDouble()} ${it.x.y.toDouble() < sensor.max!!}    &&    ${it.x.y.toDouble() >= sensor.min!!}");
+                        //println("${sensor.max} ${sensor.min} ${it.x.y.toDouble()} ${it.x.y.toDouble() < sensor.max!!}    &&    ${it.x.y.toDouble() >= sensor.min!!}");
                         if (sensor.max != null && sensor.min != null) {
                             if (it.x.y.toDouble() < sensor.max!! && it.x.y.toDouble() >= sensor.min!!) {
                                 x_data_list.add(it.x)
@@ -168,7 +168,7 @@ fun Routing.data(service: DataService, findService: SensorService) {
                         if (datas.get(i) is GraphData_domain) {
                             try {
                                 var it: GraphData_domain = datas.get(i)
-                                println("${sensor.max} ${sensor.min} ${it.x.y.toDouble()} ${it.x.y.toDouble() < sensor.max!!}    &&    ${it.x.y.toDouble() >= sensor.min!!}");
+                                //println("${sensor.max} ${sensor.min} ${it.x.y.toDouble()} ${it.x.y.toDouble() < sensor.max!!}    &&    ${it.x.y.toDouble() >= sensor.min!!}");
                                 if (sensor.max != null && sensor.min != null) {
                                     if (it.x.y.toDouble() < sensor.max!! && it.x.y.toDouble() >= sensor.min!!) {
                                         x_data_list.add(it.x)

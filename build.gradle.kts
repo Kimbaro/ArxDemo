@@ -9,6 +9,7 @@ val hikari_version: String by project
 val log_version: String by project
 val jackson_version: String by project
 val psql_version: String by project
+val ktorVersion: String by project
 
 
 plugins {
@@ -61,6 +62,7 @@ dependencies {
     implementation("com.fasterxml.jackson.datatype:jackson-datatype-jsr310:$jackson_version")
     implementation("org.apache.commons:commons-math3:3.6.1")
     implementation("com.github.wendykierp:JTransforms:3.1")
+    implementation("io.ktor:ktor-network-tls-certificates:$ktorVersion")
 }
 
 tasks {

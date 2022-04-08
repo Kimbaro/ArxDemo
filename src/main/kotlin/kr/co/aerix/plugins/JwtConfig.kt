@@ -3,7 +3,7 @@ package kr.co.aerix.plugins
 import com.auth0.jwt.JWT
 import com.auth0.jwt.JWTVerifier
 import com.auth0.jwt.algorithms.Algorithm
-import kr.co.aerix.model.User
+import kr.co.aerix.model.UserDomain
 import java.util.*
 
 object JwtConfig {
@@ -20,10 +20,10 @@ object JwtConfig {
     /**
      * Produce a token for this combination of name and password
      */
-    fun generateToken(user: User): String = JWT.create()
+    fun generateToken(user: UserDomain): String = JWT.create()
         .withSubject("Authentication")
         .withIssuer(issuer)
-        .withClaim("name", user.name)
+        .withClaim("user_id", user.user_id)
         .withClaim("password", user.password)
         .withExpiresAt(getExpiration())  // optional
         .sign(algorithm)

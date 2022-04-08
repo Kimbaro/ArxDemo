@@ -20,13 +20,14 @@ object DatabaseInitializer {
     fun init() {
         db = Database.connect(HikariDataSource(hikariConfig()))
         transaction(db) {
-            create(Todos, WorkplaceScheme, FacilityScheme, SensorScheme)
+            create(Todos, WorkplaceScheme, FacilityScheme, SensorScheme, UserScheme)
             WorkplaceScheme.insert {
                 it[name] = "에어릭스"
             }
+
             SensorScheme.insert {
                 it[max] = 0.05
-                it[min] = 0.02
+                it[min] = 0.01
                 it[mac] = "F0:B5:D1:9F:24:D8"
                 it[name] = "진동센서(D8)"
                 it[model] = "T435"
@@ -35,7 +36,7 @@ object DatabaseInitializer {
             }
             SensorScheme.insert {
                 it[max] = 0.05
-                it[min] = 0.02
+                it[min] = 0.01
                 it[mac] = "F0:B5:D1:9E:60:CE"
                 it[name] = "진동센서(CE)"
                 it[model] = "T435"
@@ -44,7 +45,7 @@ object DatabaseInitializer {
             }
             SensorScheme.insert {
                 it[max] = 0.05
-                it[min] = 0.02
+                it[min] = 0.01
                 it[mac] = "F0:B5:D1:9E:55:B3"
                 it[name] = "진동센서(B3)"
                 it[model] = "T435"
@@ -53,7 +54,7 @@ object DatabaseInitializer {
             }
             SensorScheme.insert {
                 it[max] = 0.05
-                it[min] = 0.02
+                it[min] = 0.01
                 it[mac] = "90:E2:02:07:9F:BD"
                 it[name] = "진동센서(BD)"
                 it[model] = "T435"
@@ -62,14 +63,13 @@ object DatabaseInitializer {
             }
             SensorScheme.insert {
                 it[max] = 0.05
-                it[min] = 0.02
+                it[min] = 0.01
                 it[mac] = "F0:B5:D1:9F:28:02"
                 it[name] = "진동센서(02)"
                 it[model] = "T435"
                 it[provider] = "AERIX"
                 it[placeId] = 1
             }
-
         }
 
         db_psql = Database.connect(HikariDataSource(hikariConfigByPSQL()))

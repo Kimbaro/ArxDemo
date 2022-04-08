@@ -6,7 +6,7 @@ import io.ktor.application.*
 import io.ktor.auth.*
 import io.ktor.auth.jwt.*
 import io.ktor.routing.*
-import kr.co.aerix.model.User
+import kr.co.aerix.model.UserDomain
 import kr.co.aerix.plugins.*
 import kr.co.aerix.router.*
 import kr.co.aerix.service.*
@@ -34,7 +34,7 @@ fun Application.module() {
                 val password = it.payload.getClaim("password").asString()
                 if (name != null && password != null) {
                     //인증에 성공하면 User 객체를 반환한다
-                    User(name, password)
+                    UserDomain(name, password)
                 } else {
                     null
                 }

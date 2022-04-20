@@ -14,6 +14,8 @@ import kr.co.aerix.service.WorkplaceService
 import main.kotlin.model.TodoRequest
 
 fun Routing.workplace(service: WorkplaceService) {
+    authenticate {
+
         route("/demo") {
             get("/places") {
 //            call.respond(service.getAll())
@@ -45,5 +47,6 @@ fun Routing.workplace(service: WorkplaceService) {
                 service.new(body.name)
                 call.respond(service.getMainDashboardItems()).apply { HttpStatusCode.OK }
             }
+        }
     }
 }

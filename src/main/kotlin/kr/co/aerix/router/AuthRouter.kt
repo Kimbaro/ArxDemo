@@ -9,7 +9,7 @@ import kr.co.aerix.model.UserDomain
 import kr.co.aerix.plugins.JwtConfig
 import kr.co.aerix.service.AuthService
 
-fun Routing.auth(service: AuthService) {
+fun Routing.auth() {
 
     route("") {
         post("/demo/login") {
@@ -28,7 +28,6 @@ fun Routing.auth(service: AuthService) {
 
         //유효하지 않는 인증서의 경우 401을 반환한다
         authenticate {
-
             //토큰의 유효성 검증 및 id pw 반환
             get("/authenticate") {
                 val principal = call.principal<UserDomain>()

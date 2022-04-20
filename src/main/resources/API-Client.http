@@ -1,4 +1,4 @@
-POST http://localhost:9000/demo/login
+POST https://192.168.56.1:9443/demo/login
 Content-Type: application/json
 
 {
@@ -7,15 +7,19 @@ Content-Type: application/json
 }
 
 ###
-GET http://localhost:9000/demo/places
+GET https://192.168.56.1:9443/demo/places
 Content-Type: application/json
-Authorization: Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJBdXRoZW50aWNhdGlvbiIsInBhc3N3b3JkIjoiMTIzNCIsInVzZXJfaWQiOiJ0ZXN0IiwiaXNzIjoiY29tLmFlcml4IiwiZXhwIjoxNjUwNTA3MjE0fQ.OMzUWDIFLZ60woOe8kOKzrUBnNpebSm5kR6seRbPtlsaEXhtZqsqIgKVIJhA6n8lyPbzFGvV1GcAYpOQc6-D4g
+Authorization: Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJBdXRoZW50aWNhdGlvbiIsImF1ZCI6Imh0dHA6Ly8xMjcuMC4wLjE6OTAwMC9oZWxsbyIsInBhc3N3b3JkIjoiMTIzNCIsInVzZXJfaWQiOiJ0ZXN0IiwiaXNzIjoiaHR0cDovLzEyNy4wLjAuMTo5MDAwLyIsImV4cCI6MTY1MDUxMjk2MX0._6MBmnNshLvx6hBxYtrvJFDiNvPYxXe6c0roiT5MODrTfxOjrfMwlVxU9Zu1S9k416jiWx0blH-DpWoR-0zY2A
 
+###
+GET http://192.168.56.1:9000/demo/places
+Content-Type: application/json
+Authorization: Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJBdXRoZW50aWNhdGlvbiIsImF1ZCI6Imh0dHA6Ly8xMjcuMC4wLjE6OTAwMC9oZWxsbyIsInBhc3N3b3JkIjoiMTIzNCIsInVzZXJfaWQiOiJ0ZXN0IiwiaXNzIjoiaHR0cDovLzEyNy4wLjAuMTo5MDAwLyIsImV4cCI6MTY1MDUyNTQxNH0.hPlPFW25HnZ3I1UuXjqLqHAls-Vd9QdqGB1Gt2Xt0mT4_InIouaw1OfJOv6RXZ6JrC_WeN4prhNPGK4aoPm6Yg
 ###
 
 ###
 # curl -H "Content-Type: application/json" -H "Authorization: Bearer a9ace025c90c0da2161075da6ddd3492a2fca776" https://api.iamport.kr/payments/imp_448280090638
-GET http://localhost:9000/authenticate
+GET http://192.168.56.1:9000/authenticate
 Content-Type: application/json
-Authorization: Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJBdXRoZW50aWNhdGlvbiIsInBhc3N3b3JkIjoiMTIzNCIsInVzZXJfaWQiOiJ0ZXN0IiwiaXNzIjoiY29tLmFlcml4IiwiZXhwIjoxNjUwNTA3MjE0fQ.OMzUWDIFLZ60woOe8kOKzrUBnNpebSm5kR6seRbPtlsaEXhtZqsqIgKVIJhA6n8lyPbzFGvV1GcAYpOQc6-D4g
+Authorization: Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJBdXRoZW50aWNhdGlvbiIsImF1ZCI6Imh0dHA6Ly8xMjcuMC4wLjE6OTAwMC9oZWxsbyIsInBhc3N3b3JkIjoiMTIzNCIsInVzZXJfaWQiOiJ0ZXN0IiwiaXNzIjoiaHR0cDovLzEyNy4wLjAuMTo5MDAwLyIsImV4cCI6MTY1MDUyNTQxNH0.hPlPFW25HnZ3I1UuXjqLqHAls-Vd9QdqGB1Gt2Xt0mT4_InIouaw1OfJOv6RXZ6JrC_WeN4prhNPGK4aoPm6Yg
 ###

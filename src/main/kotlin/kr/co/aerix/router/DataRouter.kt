@@ -5,8 +5,8 @@ import io.ktor.features.*
 import io.ktor.request.*
 import io.ktor.response.*
 import io.ktor.routing.*
+import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.runBlocking
 import kr.co.aerix.entity.*
 import kr.co.aerix.model.SensorResponse
 import kr.co.aerix.service.DataService
@@ -63,7 +63,7 @@ fun Routing.data(service: DataService, findService: SensorService) {
             Logger.getLogger("${call.request.uri}").info("${call.request.uri} FFT SIZE ###################### ${size}")
             var fftGraphDatas: FFTGraphData_domains
             /*----------*/
-            runBlocking {
+            coroutineScope {
                 var x_fft: List<String> = ArrayList<String>()
                 var y_fft: List<String> = ArrayList<String>()
                 var z_fft: List<String> = ArrayList<String>()
@@ -134,7 +134,7 @@ fun Routing.data(service: DataService, findService: SensorService) {
 
                 var fftGraphDatas: FFTGraphData_domains
                 /*----------*/
-                runBlocking {
+                coroutineScope {
                     var x_fft: List<String> = ArrayList<String>()
                     var y_fft: List<String> = ArrayList<String>()
                     var z_fft: List<String> = ArrayList<String>()
@@ -191,7 +191,7 @@ fun Routing.data(service: DataService, findService: SensorService) {
                         .info("${call.request.uri} FFT 테스트 ###################### ${datas.size}")
                     var fftGraphDatas: FFTGraphData_domains
                     /*----------*/
-                    runBlocking {
+                    coroutineScope {
                         var x_fft: List<String> = ArrayList<String>()
                         var y_fft: List<String> = ArrayList<String>()
                         var z_fft: List<String> = ArrayList<String>()

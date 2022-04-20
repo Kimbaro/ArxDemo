@@ -1,0 +1,21 @@
+### Send request with dynamic variables in request's body
+POST http://192.168.56.1:9000/demo/login
+Content-Type: application/json
+
+{
+  "user_id": "test",
+  "password": "1234"
+}
+
+###
+
+POST http://192.168.56.1:9000/demo/login
+Accept: application/json
+
+{
+  "user_id": "test",
+  "password": "1234"
+}
+
+###
+

@@ -30,11 +30,11 @@ fun Application.module() {
             verifier(JwtConfig.verifier)
             realm = "com.aerix"
             validate {
-                val name = it.payload.getClaim("name").asString()
+                val user_id = it.payload.getClaim("user_id").asString()
                 val password = it.payload.getClaim("password").asString()
-                if (name != null && password != null) {
+                if (user_id != null && password != null) {
                     //인증에 성공하면 User 객체를 반환한다
-                    UserDomain(name, password)
+                    UserDomain(user_id, password)
                 } else {
                     null
                 }

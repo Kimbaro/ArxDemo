@@ -1,0 +1,1 @@
+rootProject.name = "aerix-ktor-demo"

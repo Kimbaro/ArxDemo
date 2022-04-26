@@ -1,0 +1,21 @@
+POST https://localhost:9443/demo/login
+Content-Type: application/json
+
+{
+  "user_id": "test",
+  "password": "1234"
+}
+
+###
+GET https://localhost:9443/demo/places
+Content-Type: application/json
+Authorization: Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJBdXRoZW50aWNhdGlvbiIsImF1ZCI6Imh0dHA6Ly8xMjcuMC4wLjE6OTAwMC9oZWxsbyIsInBhc3N3b3JkIjoiMTIzNCIsInVzZXJfaWQiOiJ0ZXN0IiwiaXNzIjoiaHR0cDovLzEyNy4wLjAuMTo5MDAwLyIsImV4cCI6MTY1MDUxMjk2MX0._6MBmnNshLvx6hBxYtrvJFDiNvPYxXe6c0roiT5MODrTfxOjrfMwlVxU9Zu1S9k416jiWx0blH-DpWoR-0zY2A
+
+###
+
+###
+# curl -H "Content-Type: application/json" -H "Authorization: Bearer a9ace025c90c0da2161075da6ddd3492a2fca776" https://api.iamport.kr/payments/imp_448280090638
+GET http://localhost:9005/authenticate
+Content-Type: application/json
+Authorization: Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJBdXRoZW50aWNhdGlvbiIsInBhc3N3b3JkIjoiMTIzNCIsInVzZXJfaWQiOiJ0ZXN0IiwiaXNzIjoiaHR0cDovLzEyNy4wLjAuMTo5MDAwLyIsImV4cCI6MTY1MDUxMjUwNX0.wDLojVbzC0ZrmTvYbuGCeSzHRCqvJwfJvhBJaf_Jamg
+###
